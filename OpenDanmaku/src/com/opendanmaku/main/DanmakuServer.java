@@ -13,16 +13,9 @@ import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
 import com.opendanmaku.codec.MessageCodecFactory;
+import com.opendanmaku.util.DanmakuConfig;
 
 public class DanmakuServer {
-
-	public static final int PORT = 80;
-    
-    public static final boolean USE_KEEPALIVE = true;
-    public static final boolean USE_MESSAGECODEC = false;
-    
-    public static final int IDEL_TIMEOUT = 60;
-    public static final int KEEPALIVE_REQUEST_INTERVAL = 5;
     
     public static void main(String[] args) throws Exception {
     	
@@ -31,37 +24,39 @@ public class DanmakuServer {
         
         SocketSessionConfig sessionConfig = acceptor.getSessionConfig();
         sessionConfig.setReadBufferSize(1024);
-		//sessionConfig.setIdleTime(IdleStatus.READER_IDLE, IDEL_TIMEOUT);
 		
         DefaultIoFilterChainBuilder chain = acceptor.getFilterChain();
 
         //
-        if (USE_MESSAGECODEC) {
+        if (DanmakuConfig.USE_MESSAGECODEC) {
         	addMessageCodecSupport(chain);
         } else {
         	addTextLineCodecSupport(chain);
         	
         }
         
-        if (USE_KEEPALIVE) {
+        if (DanmakuConfig.USE_KEEPALIVE) {
         	addKeepAliveSupport(chain);
+        } else {
+        	sessionConfig.setIdleTime(IdleStatus.READER_IDLE, DanmakuConfig.IDEL_TIMEOUT);
         }
         
-        // Bind
+        // 
         acceptor.setHandler(new DanmakuProtocolHandler());
-        acceptor.bind(new InetSocketAddress(PORT));
+        acceptor.bind(new InetSocketAddress(DanmakuConfig.PORT));
 
-        System.out.println("Listening on port " + PORT);
+        System.out.println("Danmaku's Server Listening on port " + DanmakuConfig.PORT);
 
     }
 
     private static void addKeepAliveSupport(DefaultIoFilterChainBuilder chain) throws Exception {
+    	// KeepAlive: active, semi-active, passive, deaf speaker, sient-listener
         KeepAliveMessageFactory keepAliveMessageFactory = new KeepAliveMessageFactoryImpl();
         KeepAliveFilter keepAliveFilter = new KeepAliveFilter(keepAliveMessageFactory, IdleStatus.READER_IDLE);  
         keepAliveFilter.setForwardEvent(true);
-        keepAliveFilter.setRequestInterval(KEEPALIVE_REQUEST_INTERVAL);  
+        keepAliveFilter.setRequestInterval(DanmakuConfig.KEEPALIVE_REQUEST_INTERVAL);
+        //keepAliveFilter.setRequestTimeout(KEEPALIVE_REQUEST_TIMEOUT);
 		chain.addLast("keepAliveFilter", keepAliveFilter);
-    	
     }
     
     private static void addMessageCodecSupport(DefaultIoFilterChainBuilder chain) throws Exception {

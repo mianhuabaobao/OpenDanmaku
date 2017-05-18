@@ -10,8 +10,6 @@ public class KeepAliveMessageFactoryImpl implements KeepAliveMessageFactory {
 	    
 	@Override
 	public Object getRequest(IoSession session) {
-		System.out.println("getRequest");
-		//return HEARTBEAT_REQUEST;
 		return null;
 	}
 
@@ -19,7 +17,6 @@ public class KeepAliveMessageFactoryImpl implements KeepAliveMessageFactory {
 	public Object getResponse(IoSession session, Object request) {
 		System.out.println("getResponse >>>>>>>>>>>>>  request: " + request);
 		return HEARTBEAT_RESPONSE;
-		//return null;
 	}
 
 	@Override
@@ -33,10 +30,6 @@ public class KeepAliveMessageFactoryImpl implements KeepAliveMessageFactory {
 
 	@Override
 	public boolean isResponse(IoSession session, Object message) {
-		System.out.println("isResponse: " + message);
-//		if (message.equals(HEARTBEAT_RESPONSE)) {
-//			return true;
-//		}
 		return false;
 	}
 

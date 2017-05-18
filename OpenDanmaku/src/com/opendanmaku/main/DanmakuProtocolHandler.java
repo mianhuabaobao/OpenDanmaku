@@ -10,9 +10,6 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opendanmaku.codec.MessageRequest;
-import com.opendanmaku.util.MessageConstants;
-
 public class DanmakuProtocolHandler extends IoHandlerAdapter {
     private final static Logger LOGGER = LoggerFactory.getLogger(DanmakuProtocolHandler.class);
     
@@ -26,44 +23,50 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-   
+    	sessions.add(session);
+    	System.out.println("sessionOpened(): " + sessions.size());
     }
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        String user = (String) session.getAttribute("user");
-        users.remove(user);
+        //String user = (String) session.getAttribute(MessageConstants.KEY_USERNAME);
+        //users.remove(user);
         sessions.remove(session);
         //broadcast();
+        System.out.println("sessionClosed(): " + sessions.size());
     }
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) {
-        System.out.println("*** sessionIdle #" + session + " #" + session.getIdleCount(IdleStatus.READER_IDLE) + " ***");
-        //session.closeNow();
+    	System.out.println("sessionIdle(): " + session + " #" + session.getIdleCount(IdleStatus.READER_IDLE));
+        session.closeNow();
     }
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) {
         LOGGER.warn("Unexpected exception.", cause);
-        // Close connection when unexpected exception is caught.
+        cause.printStackTrace();
         session.closeNow();
     }
     
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
-    	MessageRequest request = (MessageRequest) message;
-
-        switch (request.getType()) {
-        case MessageConstants.MESSAGE_SUBSCRIBE:
-        	
-        	break;
-        case MessageConstants.MESSAGE_BROADCAST:
-        	
-        	break;
-        default:
-        	break;
-        }
+    	session.write(message);
+    	
+//    	MessageRequest request = (MessageRequest) message;
+//
+//    	String user = (String) session.getAttribute(MessageConstants.KEY_USERNAME);
+//    	
+//        switch (request.getType()) {
+//        case MessageConstants.MESSAGE_SUBSCRIBE:
+//        	
+//        	break;
+//        case MessageConstants.MESSAGE_BROADCAST:
+//        	
+//        	break;
+//        default:
+//        	break;
+//        }
 
     }
     

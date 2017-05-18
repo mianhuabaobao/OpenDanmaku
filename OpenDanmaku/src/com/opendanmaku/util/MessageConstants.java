@@ -12,6 +12,9 @@ public class MessageConstants {
 	//
 	public static final byte MESSAGE_KEEPALIVE = 0;
 	public static final byte MESSAGE_SUBSCRIBE = 1;
-	public static final byte MESSAGE_BROADCAST = 2;
+	public static final byte MESSAGE_UNSUBSCRIBE = 2;
+	public static final byte MESSAGE_BROADCAST = 3;
+	
+	public static final String KEY_USERNAME = "DANMAKU.USERNAME";
 
 }
