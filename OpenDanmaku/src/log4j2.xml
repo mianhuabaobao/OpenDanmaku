@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+		</Console>
+		
+		<!--<RollingFile name="RollingFile" fileName="logs/danmaku.log" filePattern="logs/$${date:yyyy-MM}/danmaku-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout pattern="%d{yyyy.MM.dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n" />
+			<SizeBasedTriggeringPolicy size="500 MB" />
+		</RollingFile>-->
+	</Appenders>
+	<Loggers>
+		<Root level="trace">
+			<AppenderRef ref="Console"/>
+		</Root>    
+	</Loggers>
+</Configuration>

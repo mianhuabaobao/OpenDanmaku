@@ -11,14 +11,18 @@ import org.apache.mina.filter.keepalive.KeepAliveMessageFactory;
 import org.apache.mina.transport.socket.SocketAcceptor;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.opendanmaku.codec.MessageCodecFactory;
 import com.opendanmaku.util.DanmakuConfig;
 
 public class DanmakuServer {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(DanmakuProtocolHandler.class);
     
-    public static void main(String[] args) throws Exception {
-    	
+	public static void main(String[] args) throws Exception {
+
         SocketAcceptor acceptor = new NioSocketAcceptor();
         acceptor.setReuseAddress(true);
         
@@ -45,7 +49,7 @@ public class DanmakuServer {
         acceptor.setHandler(new DanmakuProtocolHandler());
         acceptor.bind(new InetSocketAddress(DanmakuConfig.PORT));
 
-        System.out.println("Danmaku's Server Listening on port " + DanmakuConfig.PORT);
+        LOGGER.info("Danmaku's Server Listening on port " + DanmakuConfig.PORT);
 
     }
 

@@ -24,7 +24,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(IoSession session) throws Exception {
     	sessions.add(session);
-    	System.out.println("sessionOpened(): " + sessions.size());
+    	LOGGER.debug("sessionOpened(): " + sessions.size());
     }
 
     @Override
@@ -33,12 +33,12 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
         //users.remove(user);
         sessions.remove(session);
         //broadcast();
-        System.out.println("sessionClosed(): " + sessions.size());
+        LOGGER.debug("sessionClosed(): " + sessions.size());
     }
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) {
-    	System.out.println("sessionIdle(): " + session + " #" + session.getIdleCount(IdleStatus.READER_IDLE));
+    	LOGGER.debug("sessionIdle(): " + session + " #" + session.getIdleCount(IdleStatus.READER_IDLE));
         session.closeNow();
     }
 
