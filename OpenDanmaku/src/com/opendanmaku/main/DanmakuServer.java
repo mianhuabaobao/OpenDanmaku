@@ -1,11 +1,13 @@
 package com.opendanmaku.main;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.filter.executor.ExecutorFilter;
 import org.apache.mina.filter.keepalive.KeepAliveFilter;
 import org.apache.mina.filter.keepalive.KeepAliveMessageFactory;
 import org.apache.mina.transport.socket.SocketAcceptor;
@@ -27,7 +29,7 @@ public class DanmakuServer {
         acceptor.setReuseAddress(true);
         
         SocketSessionConfig sessionConfig = acceptor.getSessionConfig();
-        sessionConfig.setReadBufferSize(1024);
+        //sessionConfig.setReadBufferSize(1024);
 		
         DefaultIoFilterChainBuilder chain = acceptor.getFilterChain();
 
@@ -40,10 +42,12 @@ public class DanmakuServer {
         }
         
         if (DanmakuConfig.USE_KEEPALIVE) {
-        	addKeepAliveSupport(chain);
+        	//addKeepAliveSupport(chain);
         } else {
         	sessionConfig.setIdleTime(IdleStatus.READER_IDLE, DanmakuConfig.IDEL_TIMEOUT);
         }
+        
+        chain.addLast("threadPool", new ExecutorFilter(Executors.newCachedThreadPool()));
         
         // 
         acceptor.setHandler(new DanmakuProtocolHandler());

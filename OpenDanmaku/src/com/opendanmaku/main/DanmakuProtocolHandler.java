@@ -16,6 +16,27 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     private final Set<IoSession> sessions = Collections.synchronizedSet(new HashSet<IoSession>());
     private final Set<String> users = Collections.synchronizedSet(new HashSet<String>());
     
+    private volatile int broadcast = 0;
+    
+    public DanmakuProtocolHandler() {
+    	super();
+
+    	new Thread(new Runnable() {
+			@Override
+			public void run() {
+				LOGGER.info("broadcast now.");
+				for(;;) {
+					try {
+						Thread.sleep(5000l);
+						broadcast("broadcasting: " + (++broadcast));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+    	}).start();
+    }
+    
     @Override
     public void sessionCreated(IoSession session) {
 
@@ -24,7 +45,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(IoSession session) throws Exception {
     	sessions.add(session);
-    	LOGGER.debug("sessionOpened(): " + sessions.size());
+    	LOGGER.info("sessionOpened(): " + sessions.size());
     }
 
     @Override
@@ -33,12 +54,12 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
         //users.remove(user);
         sessions.remove(session);
         //broadcast();
-        LOGGER.debug("sessionClosed(): " + sessions.size());
+        LOGGER.info("sessionClosed(): " + sessions.size());
     }
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) {
-    	LOGGER.debug("sessionIdle(): " + session + " #" + session.getIdleCount(IdleStatus.READER_IDLE));
+    	LOGGER.info("sessionIdle(): " + session + " #" + session.getIdleCount(IdleStatus.READER_IDLE));
         session.closeNow();
     }
 
@@ -72,9 +93,10 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     
     public void broadcast(String message) {
         synchronized (sessions) {
+        	LOGGER.info("#" + sessions.size() + " " + message);
             for (IoSession session : sessions) {
                 if (session.isConnected()) {
-                    session.write("BROADCAST OK " + message);
+                    session.write(message);
                 }
             }
         }
