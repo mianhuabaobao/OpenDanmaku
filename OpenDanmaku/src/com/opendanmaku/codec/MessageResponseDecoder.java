@@ -16,26 +16,27 @@ public class MessageResponseDecoder extends CumulativeProtocolDecoder {
 			byte type = in.get();
 			byte channel = in.get();
 			
-			MessageRequest request = null;
+			MessageProtocol response = null;
 			short checksum = 0;
 			
 			switch (type) {
 			case MessageConstants.MESSAGE_SUBSCRIBE:
-				checksum = in.getShort();
-				request = new MessageRequest(length, version, type, channel, checksum);					
-				break;
 			case MessageConstants.MESSAGE_BROADCAST:
-				byte[] message = new byte[(length & 0x0FF) - 5];
-				in.get(message);
+				byte[] message = null;
+				int len = (length & 0x0FF) - 5;
+				if (len > 0) {
+					message = new byte[len];
+					in.get(message);
+				}
 				checksum = in.getShort();
-				request = new MessageRequest(length, version, type, channel, message, checksum);						
+				response = new MessageProtocol(length, version, type, channel, message, checksum);						
 				break;					
 			default:
 				throw new Exception("Unknown MessageRequest's type.");
 				//break;
 			}
 
-			out.write(request);
+			out.write(response);
 			return true;
 		}
 		

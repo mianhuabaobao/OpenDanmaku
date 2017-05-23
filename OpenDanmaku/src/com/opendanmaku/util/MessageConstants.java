@@ -17,5 +17,8 @@ public class MessageConstants {
 	
 	public static final String KEY_USERNAME = "DANMAKU.USERNAME";
 	public static final String KEY_CHANNEL = "DANMAKU.CHANNEL";
+	
+	
+	public static final String CHARSET_UTF8 = "UTF-8";
 
 }

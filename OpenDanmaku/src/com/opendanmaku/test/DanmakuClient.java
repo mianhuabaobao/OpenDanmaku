@@ -56,8 +56,10 @@ public class DanmakuClient extends Thread {
 		}  
 	}  
 
-	public static void main(String args[]) throws Exception {  
-		if (true) {
+	public static void main(String args[]) throws Exception {
+		boolean testRedis = false;
+		
+		if (testRedis) {
 			
 			String redisIp = "47.90.59.0";
 			int reidsPort = 63799;
