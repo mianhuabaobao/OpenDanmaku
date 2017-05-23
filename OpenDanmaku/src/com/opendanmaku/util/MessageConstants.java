@@ -16,5 +16,6 @@ public class MessageConstants {
 	public static final byte MESSAGE_BROADCAST = 3;
 	
 	public static final String KEY_USERNAME = "DANMAKU.USERNAME";
+	public static final String KEY_CHANNEL = "DANMAKU.CHANNEL";
 
 }

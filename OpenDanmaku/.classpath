@@ -12,5 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="F:/{}git/OpenDanmaku/OpenDanmaku/libs/ognl-3.1.11.jar"/>
 	<classpathentry exported="true" kind="lib" path="F:/{}git/OpenDanmaku/OpenDanmaku/libs/slf4j-api-1.7.21.jar"/>
 	<classpathentry kind="lib" path="F:/{}git/OpenDanmaku/OpenDanmaku/libs/jedis-2.9.0.jar"/>
+	<classpathentry kind="lib" path="F:/{}git/OpenDanmaku/OpenDanmaku/libs/commons-pool2-2.4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

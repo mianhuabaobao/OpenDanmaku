@@ -42,12 +42,14 @@ public class DanmakuServer {
         }
         
         if (DanmakuConfig.USE_KEEPALIVE) {
-        	//addKeepAliveSupport(chain);
+        	addKeepAliveSupport(chain);
         } else {
         	sessionConfig.setIdleTime(IdleStatus.READER_IDLE, DanmakuConfig.IDEL_TIMEOUT);
         }
         
-        chain.addLast("threadPool", new ExecutorFilter(Executors.newCachedThreadPool()));
+        if (DanmakuConfig.USE_THREADPOOL) {
+        	addThreadPoolSupport(chain);
+        }
         
         // 
         acceptor.setHandler(new DanmakuProtocolHandler());
@@ -73,6 +75,10 @@ public class DanmakuServer {
     
     private static void addTextLineCodecSupport(DefaultIoFilterChainBuilder chain) throws Exception {
     	chain.addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory()));
+    }
+    
+    private static void addThreadPoolSupport(DefaultIoFilterChainBuilder chain) throws Exception {
+    	chain.addLast("threadPool", new ExecutorFilter(Executors.newCachedThreadPool()));
     }
 
 }

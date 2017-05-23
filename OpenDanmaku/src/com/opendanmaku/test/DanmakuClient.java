@@ -5,6 +5,11 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import redis.clients.jedis.BinaryJedisPubSub;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
 public class DanmakuClient extends Thread {
 	static final int MAX_THREADS = 5000;  
 	private int id = 0;  
@@ -38,8 +43,9 @@ public class DanmakuClient extends Thread {
 		try{  
 			String str; 
 			for(;;) {  
-				str=in.readLine();  
-				System.out.println(System.currentTimeMillis() + " Server(" + id + ") reply: " + str);  
+				//str=in.readLine();  
+				//System.out.println(System.currentTimeMillis() + " Server(" + id + ") reply: " + str);  
+				System.out.println( "Server(" + id + ") reply: " + in.read());  
 			}  
 		}catch(Exception e){
 			e.printStackTrace();
@@ -51,20 +57,52 @@ public class DanmakuClient extends Thread {
 	}  
 
 	public static void main(String args[]) throws Exception {  
-		//InetAddress ia = InetAddress.getByName("47.90.59.0");
-		InetAddress ia = InetAddress.getByName("115.29.100.203");
+		if (true) {
+			
+			String redisIp = "47.90.59.0";
+			int reidsPort = 63799;
+			JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), redisIp, reidsPort);
+			System.out.println(String.format("redis pool is starting, redis ip %s, redis port %d", redisIp, reidsPort));
+		        
+		        
+			Jedis jedis = jedisPool.getResource(); //new Jedis("47.90.59.0", 63799);
+			//jedis.set("hello".getBytes("UTF-8"),"my world!".getBytes("UTF-8"));
+			jedis.set("hello".getBytes("UTF-8"), new byte[]{'a','o'});
+			
+			byte[] channel = "helloworld".getBytes("UTF-8");
+			
+			System.out.println("hello >>> " + jedis.get("hello"));
+			
+			jedis.publish(channel, new byte[]{'a','o'});
+
+			BinaryJedisPubSub jedisPubSub = new BinaryJedisPubSub () {
+				@Override  
+			    public void onMessage(byte[] channel, byte[] message) {
+					System.out.println("onMessage >>> " + new String(message));
+				}
+			};
+			
+			jedis.subscribe(jedisPubSub, channel);
+			
+			System.out.println("disconnect >>> ");
+
+			jedis.disconnect();
+			return;
+		}
+		
+		InetAddress ia = InetAddress.getByName("47.90.59.0");
+		//InetAddress ia = InetAddress.getByName("115.29.100.203");
 		//InetAddress ia = InetAddress.getByName(null);
 		while(true){
 			if(getThreadCount() < MAX_THREADS)  
 				new DanmakuClient(ia);
 			else 
 				break;  
-			Thread.currentThread().sleep(10);  
+			Thread.sleep(10);  
 		}
 		
 		for (;;) {
-			
-			Thread.currentThread().sleep(10000);
+			Thread.sleep(10000);
 			System.out.println("### idle ###");
 		}
 	}
