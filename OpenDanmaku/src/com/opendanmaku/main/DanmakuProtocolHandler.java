@@ -121,21 +121,32 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     }
     
     private void doExit(IoSession session) {
-    	// step 1
-        String user = (String) session.getAttribute(MessageConstants.KEY_USERNAME);
-        if (user != null) {
-            users.remove(user);
-            LOGGER.info("exit(" + user + "): " + users.size());
-        }
-        
-        // step 2
-        int channel = (int) session.getAttribute(MessageConstants.KEY_CHANNEL);
-        Set<IoSession> receivers = channels.get(channel);
-        if (receivers != null) {
-        	receivers.remove(session);
-        	LOGGER.info("exit(" + channel + "): " + receivers.size());
-        }
+    	Object attr = null;
 
+    	// step 1
+    	attr = session.getAttribute(MessageConstants.KEY_USERNAME);
+    	if (attr  != null) {
+	    	String user = (String) attr;
+	    	if (user != null) {
+		    	users.remove(user);
+		    	LOGGER.info("exit(" + user + "), user left:  " + users.size());
+	    	}
+    	} else {
+    		LOGGER.warn("attribute(KEY_USERNAME) is null.");
+    	}
+
+    	// step 2
+    	attr = session.getAttribute(MessageConstants.KEY_CHANNEL);
+    	if (attr  != null) {
+	    	int channel = (int) attr;
+	    	Set<IoSession> receivers = channels.get(channel);
+	    	if (receivers != null) {
+		    	receivers.remove(session);
+		    	LOGGER.info("exit(" + channel + "), receivers left: " + receivers.size());
+	    	}
+    	} else {
+    		LOGGER.warn("attribute(KEY_CHANNEL) is null.");
+    	}
     }
     
     private void doSubscribe(IoSession session, MessageProtocol request) throws Exception {

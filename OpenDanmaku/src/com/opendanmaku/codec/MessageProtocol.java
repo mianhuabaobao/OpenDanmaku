@@ -10,7 +10,6 @@ public class MessageProtocol {
     private byte[] message;
     private short checksum;
     
-    // MESSAGE_SUBSCRIBE / MESSAGE_BROADCAST
     public MessageProtocol(byte length, byte version, byte type, byte channel, byte[] message, short checksum) {
         this.length = length;
         this.version = version;
