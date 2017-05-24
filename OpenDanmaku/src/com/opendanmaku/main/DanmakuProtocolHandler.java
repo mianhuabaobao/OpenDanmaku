@@ -22,7 +22,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     
     private final Set<IoSession> sessions = Collections.synchronizedSet(new HashSet<IoSession>());
     private final Set<String> users = Collections.synchronizedSet(new HashSet<String>());
-    private final BlockingQueue<MessageProtocol> queues = new LinkedBlockingQueue<MessageProtocol>(4096);
+    private final BlockingQueue<MessageProtocol> queues = new LinkedBlockingQueue<MessageProtocol>(102400);
     private final Map<Integer, Set<IoSession>> channels =  new HashMap<Integer, Set<IoSession>>();
     
     public DanmakuProtocolHandler() {
@@ -84,7 +84,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) {
         LOGGER.warn("Unexpected exception.", cause);
-        cause.printStackTrace();
+        //cause.printStackTrace();
         session.closeNow();
     }
     
@@ -114,7 +114,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     }
     
     private void doUnsubscribe(IoSession session, MessageProtocol request) throws Exception {
-    	//REQUEST: 5|0xff|0x02|0x00|0x0000
+    	//REQUEST: 0x05|0xff|0x02|0x00|0x0000
     	// 05 ff 02 00 00 00
     	
     	doExit(session);
@@ -131,8 +131,6 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
 		    	users.remove(user);
 		    	LOGGER.info("exit(" + user + "), user left:  " + users.size());
 	    	}
-    	} else {
-    		LOGGER.warn("attribute(KEY_USERNAME) is null.");
     	}
 
     	// step 2
@@ -144,8 +142,6 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
 		    	receivers.remove(session);
 		    	LOGGER.info("exit(" + channel + "), receivers left: " + receivers.size());
 	    	}
-    	} else {
-    		LOGGER.warn("attribute(KEY_CHANNEL) is null.");
     	}
     }
     
@@ -157,7 +153,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
     	byte[] msg = request.getMessage();
     	
     	if (msg == null) {
-    		// 用户名不能为空: 0x06|0xff|0x01|0x00|0x01|0x0000
+    		// 用户名不能为空: 06 ff 01 00 01 00 00
     		LOGGER.warn("username required.");
     		doResponse(session, new MessageProtocol((byte) 0x06, MessageConstants.MESSAGE_VERSION, MessageConstants.MESSAGE_SUBSCRIBE, (byte) 0, new byte[]{1}, (short) 0));
     		return;
@@ -170,7 +166,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
 		Set<IoSession> receivers = channels.get(channel);
 		
 		if (receivers == null) {
-			// 订阅频道不存在: 0x06|0xff|0x01|0x00|0x02|0x0000
+			// 订阅频道不存在: 06 ff 01 00 02 00 00
 			LOGGER.warn("channel not found: " + channel);
 			doResponse(session, new MessageProtocol((byte) 0x06, MessageConstants.MESSAGE_VERSION, MessageConstants.MESSAGE_SUBSCRIBE, (byte) 0, new byte[]{2}, (short) 0));
 			return;
@@ -179,7 +175,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
 		// step 3
 		synchronized (users) {
         	if (users.contains(user)) {
-        		// 用户名已存在: 0x06|0xff|0x01|0x00|0x03|0x0000
+        		// 用户名已存在: 06 ff 01 00 03 00 00
         		LOGGER.warn("user found: " + user);
         		doResponse(session, new MessageProtocol((byte) 0x06, MessageConstants.MESSAGE_VERSION, MessageConstants.MESSAGE_SUBSCRIBE, (byte) 0, new byte[]{3}, (short) 0));
         		return;
@@ -194,7 +190,7 @@ public class DanmakuProtocolHandler extends IoHandlerAdapter {
 		receivers.add(session);
 		
 		LOGGER.info("doSubscribe: user = " + user + ", users = "+ users.size() + ", channel = " + channel + ", receivers = " + receivers.size());
-		// 返回订阅成功命令: 0x06|0xff|0x01|0x00|0x00|0x0000
+		// 返回订阅成功命令: 06 ff 01 00 00 00 00
 		doResponse(session, new MessageProtocol((byte) 0x06, MessageConstants.MESSAGE_VERSION, MessageConstants.MESSAGE_SUBSCRIBE, (byte) 0, new byte[]{0}, (short) 0));
     }
     

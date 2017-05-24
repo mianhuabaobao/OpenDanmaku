@@ -42,7 +42,7 @@ public class DanmakuServer {
         }
         
         if (DanmakuConfig.USE_KEEPALIVE) {
-        	//addKeepAliveSupport(chain);
+        	addKeepAliveSupport(chain);
         } else {
         	sessionConfig.setIdleTime(IdleStatus.READER_IDLE, DanmakuConfig.IDEL_TIMEOUT);
         }

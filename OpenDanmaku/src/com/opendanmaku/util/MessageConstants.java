@@ -10,6 +10,7 @@ public class MessageConstants {
 	public static final byte BROADCAST_CHANNEL = 0;
 
 	//
+	public static final byte MESSAGE_UNKNOWN = (byte) 0xff;
 	public static final byte MESSAGE_KEEPALIVE = 0;
 	public static final byte MESSAGE_SUBSCRIBE = 1;
 	public static final byte MESSAGE_UNSUBSCRIBE = 2;

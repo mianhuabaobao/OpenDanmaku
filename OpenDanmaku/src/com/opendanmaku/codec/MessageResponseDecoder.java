@@ -20,7 +20,9 @@ public class MessageResponseDecoder extends CumulativeProtocolDecoder {
 			short checksum = 0;
 			
 			switch (type) {
+			case MessageConstants.MESSAGE_KEEPALIVE:
 			case MessageConstants.MESSAGE_SUBSCRIBE:
+			case MessageConstants.MESSAGE_UNSUBSCRIBE:
 			case MessageConstants.MESSAGE_BROADCAST:
 				byte[] message = null;
 				int len = (length & 0x0FF) - 5;
