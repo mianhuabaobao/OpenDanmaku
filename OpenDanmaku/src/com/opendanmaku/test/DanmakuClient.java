@@ -11,7 +11,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 public class DanmakuClient extends Thread {
-	static final int MAX_THREADS = 5000;  
+	static final int MAX_THREADS = 10;  
 	private int id = 0;  
 	private static int threadCount = 0;  
 	private Socket s;  
